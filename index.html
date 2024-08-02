@@ -1,0 +1,249 @@
+<html>
+	<head>
+		<title>Белорусская рыбалка 2.0</title>
+
+		<style>
+			body {
+				background: url(4.jpg);
+				background-size: 100% 100%;
+				overflow: hidden;
+			}
+
+			.menu {
+				position: absolute;
+				top: 30px;
+				right: 50px;
+			}
+
+			.location {
+				width: 80px;
+				height: 40px;
+				border-radius: 5px;
+				border: solid 1px tomato;
+				cursor: pointer;
+			}
+
+			.stick {
+				transition-duration: 1s;
+				background: url(stick.png);
+				background-size: 10px 250px;
+				position: absolute;
+				width: 10px;
+				height: 350px;
+				bottom: 0;
+				right: 100px;
+			}
+
+			.stick:hover {
+				transform: rotate(-7deg);
+			}
+
+			.float {
+				background: url(float1.png);
+				background-size: 5px 25px;
+				position: absolute;
+				width: 5px;
+				height: 25px;
+				top: 0;
+				left: 0;
+				z-index: 1;
+			}
+
+			.hook {
+				transition-duration: 0.25s;
+				background: url(hook.png);
+				background-size: 100px 100px;
+				position: absolute;
+				width: 100px;
+				height: 100px;
+				bottom: 100px;
+				left: 50px;
+				cursor: pointer;
+				opacity: 0.5;
+			}
+
+			.hook:hover {
+				transform: rotate(-10deg) scale(1.1);
+				opacity: 1;
+			}
+
+			.sign {
+				display: none;
+				background: url(sign.png);
+				background-size: 700px 350px;
+				width: 700px;
+				height: 350px;
+				margin-top: 13%;
+				z-index: 999;
+			}
+
+			.text {
+				padding-top: 50px;
+				font-size: 25px;
+			}
+
+			.fish {
+				margin-top: 20px;
+				width: 200px;
+				height: 100px;
+			}
+
+			.label {
+				margin-top: 20px;
+				font-size: 28px;
+			}
+		</style>
+	</head>
+	<body onmousedown="setFloat()">
+		<div>Белорусская рыбалка - Режим ловли рыбы</div>
+
+		<div class="stick" id="stick"></div>
+
+		<div class="float" id="float"></div>
+
+		<div class="hook" id="hook" onclick="hooking()"></div>
+
+		<center>
+			<div class="sign" id="sign">
+				<div class="text">Поздравляем, вы поймали рыбу!</div>
+				<img src="fish1.webp" class="fish" id="fish">
+				<div class="label" id="label">Карась, 200 гр</div>
+			</div>
+		</center>
+
+		<div class="menu" id="menu">
+			<img onclick="setLocation('1.webp')" class="location" src="1.webp">
+			<img onclick="setLocation('2.jpg')" class="location" src="2.jpg">
+			<img onclick="setLocation('3.jpeg')" class="location" src="3.jpeg">
+			<br>
+			<img onclick="setLocation('4.jpg')" class="location" src="4.jpg">
+			<img onclick="setLocation('5.jpg')" class="location" src="5.jpg">
+		</div>
+
+		<script type="text/javascript">
+			function setFloat() {
+				let x = window.event.clientX;
+				let y = window.event.clientY;
+
+				if (y > 350 && y < 700) {
+					unbite();
+
+					let float1 = document.getElementById("float");
+					let stick1 = document.getElementById("stick");
+
+					float1.style.left = x + "px";
+					float1.style.top = y + "px";
+
+					stick1.style.left = (x + 70) + "px";
+
+					playSoundOnce("s3.mp3");
+
+					startBite();
+				}
+			}
+
+			function startBite() {
+				const randomTimeoutSeconds = Math.floor(Math.random() * 10);
+				setTimeout(bite, randomTimeoutSeconds * 1000);
+			}
+
+			function setLocation(locationName) {
+				unbite();
+				document.body.style.background = "url(" + locationName + ")";
+				document.body.style.backgroundSize = "100% 100%";
+				playSound("s1.mp3");
+			}
+
+			var audio = null;
+
+			function playSound(source) {
+				if(audio) {
+					audio.pause();
+				}
+
+				audio = new Audio(source);
+				audio.play();
+			}
+
+			function playSoundOnce(source) {
+				const onceAudio = new Audio(source);
+				onceAudio.play();
+			}
+
+			var isBite = false;
+
+			function bite() {
+				isBite = true;
+				let float = document.getElementById("float");
+				float.style.background = "url(float2.png)";
+			}
+
+			function unbite() {
+				isBite = false;
+				let float = document.getElementById("float");
+				float.style.background = "url(float1.png)";
+			}
+
+			function hooking() {
+				if(isBite == true) {
+					getFish();
+					unbite();
+				} else {
+					alert('Не клюет!');
+				}
+			}
+
+			function getFish() {
+				newFish();
+
+				let sign = document.getElementById("sign");
+				sign.style.display = "block";
+
+				let stick = document.getElementById("stick");
+				stick.style.display = "none";
+
+				let float = document.getElementById("float");
+				float.style.display = "none";
+
+				setTimeout(removeFish, 5000);
+			}
+
+			function removeFish() {
+				let sign = document.getElementById("sign");
+				sign.style.display = "none";
+
+				let stick = document.getElementById("stick");
+				stick.style.display = "block";
+
+				let float = document.getElementById("float");
+				float.style.display = "block";
+			}
+
+			function newFish() {
+				const rand = Math.floor(Math.random() * 4);
+
+				if(rand == 0 || rand == 3) {
+					const mass = Math.floor(Math.random() * 14) * 300.14 + 1;
+					document.getElementById("label").innerHTML = "Карась, " + mass + " г";
+					setFishImage("fish1.webp");
+				}
+
+				if(rand == 1) {
+					const mass = Math.floor(Math.random() * 150.66)  + 1;
+					document.getElementById("label").innerHTML = "Окунь, " + mass + " г";
+					setFishImage("fish2.webp");
+				}
+
+				if(rand == 2) {
+					const mass = Math.floor(Math.random() * 12.7) * 50.88 + 1;
+					document.getElementById("label").innerHTML = "Плотва, " + mass + " г";
+					setFishImage("fish3.webp");
+				}
+			}
+
+			function setFishImage(fishImageName) {
+				document.getElementById("fish").src = fishImageName;
+			}
+		</script>
+	</body>
+</html>
